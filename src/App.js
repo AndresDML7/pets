@@ -8,7 +8,13 @@ function App() {
 
   const [animal, setAnimal] = useState({
     name: "",
-    type: ""
+    type: "",
+    breed: "",
+    birth_date: "",
+    owner_name: "",
+    owner_tel: "",
+    owner_address: "",
+    owner_email: ""
   });
   const [animals, setAnimals] = useState([]);
   const [openModal, setOpenModal] = useState(false);
@@ -16,7 +22,9 @@ function App() {
   const [detailModal, setDetailModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [id, setId] = useState("");
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({
+    operations: null
+  });
 
   useEffect(() => {
     (async () => {
@@ -32,12 +40,49 @@ function App() {
 
   const validForm = () => {
     let isValid = true;
-    setError(null);
+    let error = {};
 
-    if(isEmpty(animal)) {
-      setError("Asegúrate de ingresar todos los datos.");
+    if(isEmpty(animal.name)) {
+      error["name"] = "Por favor, ingresa el nombre de la mascota.";
       isValid = false;
     }
+
+    if(isEmpty(animal.type)) {
+      error["type"] = "Por favor, ingresa el tipo de mascota.";
+      isValid = false;
+    }
+
+    if(isEmpty(animal.breed)) {
+      error["breed"] = "Por favor, ingresa la raza de la mascota.";
+      isValid = false;
+    }
+
+    if(isEmpty(animal.birth_date)) {
+      error["birth_date"] = "Por favor, ingresa la fecha de nacimiento de la mascota.";
+      isValid = false;
+    }
+
+    if(isEmpty(animal.owner_name)) {
+      error["owner_name"] = "Por favor, ingresa el nombre del dueño de la mascota";
+      isValid = false;
+    }
+
+    if(isEmpty(animal.owner_tel)) {
+      error["owner_tel"] = "Por favor, ingresa el telefono del dueño de la mascota.";
+      isValid = false;
+    }
+
+    if(isEmpty(animal.owner_address)) {
+      error["owner_address"] = "Por favor, ingresa la dirección del dueño de la mascota";
+      isValid = false;
+    }
+
+    if(isEmpty(animal.owner_email)) {
+      error["owner_email"] = "Por favor, ingresa el e-mail del dueño de la mascota";
+      isValid = false;
+    }
+
+    setError(error);
 
     return isValid;
   }
@@ -45,6 +90,8 @@ function App() {
   const handleChange = e => {
     const { name, value } = e.target;
     setAnimal({ ...animal, [name]: value });
+    setError({ ...error, [name]: null });
+
   }
 
   const addAnimal = async (e) => {
@@ -54,18 +101,28 @@ function App() {
       return;
     }
 
-    console.log(animal);
-    const result = await addDocument("animals", {name: animal.name, type: animal.type});
+    const result = await addDocument("animals", {name: animal.name, type: animal.type, 
+      breed: animal.breed, birth_date: animal.birth_date, owner_name: animal.owner_name, 
+      owner_tel: animal.owner_tel, owner_address: animal.owner_address, owner_email: animal.owner_email});
 
     if(!result.statusResponse) {
-      setError(result.error);
+      setError({ ...error, ["operations"]: result.error});
       return;
     }
 
-    setAnimals([...animals, { id: result.data.id, name: animal.name, type: animal.type }]);
+    setAnimals([...animals, { id: result.data.id, name: animal.name, type: animal.type, 
+      breed: animal.breed, birth_date: animal.birth_date, owner_name: animal.owner_name, 
+      owner_tel: animal.owner_tel, owner_address: animal.owner_address, owner_email: animal.owner_email }]);
+
     setAnimal({
       name: "",
-      type: ""
+      type: "",
+      breed: "",
+      birth_date: "",
+      owner_name: "",
+      owner_tel: "",
+      owner_address: "",
+      owner_email: ""
     });
     toggleOpenModal();
   }
@@ -77,19 +134,30 @@ function App() {
       return;
     }
 
-    const result = await updateDocument("animals", id, {name: animal.name, type: animal.type} );
+    const result = await updateDocument("animals", id, {name: animal.name, type: animal.type, 
+      breed: animal.breed, birth_date: animal.birth_date, owner_name: animal.owner_name, 
+      owner_tel: animal.owner_tel, owner_address: animal.owner_address, owner_email: animal.owner_email} );
 
     if(!result.statusResponse) {
-      setError(result.error);
+      setError({ ...error, ["operations"]: result.error});
       return;
     }
 
-    const editedAnimals = animals.map(item => item.id === id ? {id, name: animal.name, type: animal.type} : item);
+    const editedAnimals = animals.map(item => item.id === id ? {id, name: animal.name, type: animal.type, 
+      breed: animal.breed, birth_date: animal.birth_date, owner_name: animal.owner_name, owner_tel: animal.owner_tel, 
+      owner_address: animal.owner_address, owner_email: animal.owner_email} : item);
+
     setAnimals(editedAnimals);
     setEditMode(false);
     setAnimal({
       name: "",
-      type: ""
+      type: "",
+      breed: "",
+      birth_date: "",
+      owner_name: "",
+      owner_tel: "",
+      owner_address: "",
+      owner_email: ""
     });
     setId("");
     toggleOpenModal();
@@ -99,7 +167,7 @@ function App() {
     const result = await deleteDocument("animals", id);
 
     if(!result.statusResponse) {
-      setError(result.error);
+      setError({ ...error, ["operations"]: result.error});
       return;
     }
 
@@ -110,7 +178,7 @@ function App() {
 
   const editAnimal = (theAnimal) => {
 
-    setAnimal({name: theAnimal.name, type: theAnimal.type});
+    setAnimal(theAnimal);
     setEditMode(true);
     setId(theAnimal.id);
     toggleOpenModal();
@@ -118,7 +186,7 @@ function App() {
 
   const detailAnimal = (theAnimal) => {
 
-    setAnimal({name: theAnimal.name, type: theAnimal.type});
+    setAnimal(theAnimal);
     setId(theAnimal.id);
     toggleDetailModal();
   }
@@ -138,9 +206,16 @@ function App() {
 
   const cancelOpenModal = () => {
     setEditMode(false);
+    setError({});
     setAnimal({
       name: "",
-      type: ""
+      type: "",
+      breed: "",
+      birth_date: "",
+      owner_name: "",
+      owner_tel: "",
+      owner_address: "",
+      owner_email: ""
     });
     setId("");
     toggleOpenModal();
@@ -150,7 +225,13 @@ function App() {
     setEditMode(false);
     setAnimal({
       name: "",
-      type: ""
+      type: "",
+      breed: "",
+      birth_date: "",
+      owner_name: "",
+      owner_tel: "",
+      owner_address: "",
+      owner_email: ""
     });
     setId("");
     toggleDetailModal();
@@ -161,7 +242,7 @@ function App() {
       <h1>Mascotas</h1>
       <hr/>
       <div>
-        <div className="col-8">
+        <div className="col-12">
           <h4 className="text-center">Lista de Mascotas</h4>
 
           {
@@ -192,26 +273,75 @@ function App() {
 
           <br/>
           <button className="btn btn-success" onClick={()=> toggleOpenModal()}>Nueva Mascota</button>
-
         </div>
 
         <Modal isOpen={openModal}>
           <ModalHeader>{ editMode ? "Modificar Mascota" : "Agregar Mascota"}</ModalHeader>
           <form onSubmit={ editMode ? saveAnimal : addAnimal}>
             <ModalBody>
-                <div className="form-group">
+              <div className="form-group">
 
-                  <label>Nombre: </label>
-                  <input type="text" className="form-control mb-2" name="name" 
-                  placeholder="Ingrese el nombre de la mascota..." onChange={ handleChange } value={animal.name}/>
+                <div className="row">
 
-                  <label>Tipo: </label>
-                  <input type="text" className="form-control mb-2" name="type" 
-                  placeholder="Ingrese el tipo de mascota..." onChange={ handleChange } value={animal.type}/>
+                  <div className="col-6">
 
-                  { error && <span className="text-danger">{error}</span>}
+                    <strong>Nombre: </strong>
+                    <input type="text" className="form-control mb-2" name="name" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.name}/>
+                    <span style={{color: "red"}}>{error["name"]}</span>
+                    <br/>
+
+                    <strong>Tipo: </strong>
+                    <input type="text" className="form-control mb-2" name="type" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.type}/>
+                    <span style={{color: "red"}}>{error["type"]}</span>
+                    <br/>
+
+                    <strong>Raza: </strong>
+                    <input type="text" className="form-control mb-2" name="breed" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.breed}/>
+                    <span style={{color: "red"}}>{error["breed"]}</span>
+                    <br/>
+
+                    <strong>Fecha de nacimiento: </strong>
+                    <input type="text" className="form-control mb-2" name="birth_date" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.birth_date}/>
+                    <span style={{color: "red"}}>{error["birth_date"]}</span>
+
+                  </div>
+
+                  <div className="col-6">
+
+                    <strong>Nombre del dueño: </strong>
+                    <input type="text" className="form-control mb-2" name="owner_name" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_name}/>
+                    <span style={{color: "red"}}>{error["owner_name"]}</span>
+                    <br/>
+
+                    <strong>Teléfono del dueño: </strong>
+                    <input type="text" className="form-control mb-2" name="owner_tel" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_tel}/>
+                    <span style={{color: "red"}}>{error["owner_tel"]}</span>
+                    <br/>
+
+                    <strong>Dirección del dueño: </strong>
+                    <input type="text" className="form-control mb-2" name="owner_address" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_address}/>
+                    <span style={{color: "red"}}>{error["owner_address"]}</span>
+                    <br/>
+
+                    <strong>E-mail del dueño: </strong>
+                    <input type="text" className="form-control mb-2" name="owner_email" 
+                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_email}/>
+                    <span style={{color: "red"}}>{error["owner_email"]}</span>
+
+                  </div>
 
                 </div>
+
+                {error["operations"] !== null && <span>{error["operations"]}</span>}
+
+              </div>
             </ModalBody>
             <ModalFooter>
             <button className={editMode ? "btn btn-warning btn-block" : "btn btn-success btn-block"} 
@@ -226,12 +356,41 @@ function App() {
             <ModalBody>
                 <div className="form-group">
 
-                  <label>Nombre: </label>
-                  <input type="text" className="form-control mb-2" value={animal.name} readOnly/>
+                  <div className="row">
 
-                  <label>Tipo: </label>
-                  <input type="text" className="form-control mb-2" value={animal.type} readOnly/>
+                    <div className="col-6">
 
+                      <label>Nombre: </label>
+                      <input type="text" className="form-control mb-2" value={animal.name} readOnly/>
+
+                      <label>Tipo: </label>
+                      <input type="text" className="form-control mb-2" value={animal.type} readOnly/>
+
+                      <label>Raza: </label>
+                      <input type="text" className="form-control mb-2" value={animal.breed} readOnly/>
+
+                      <label>Fecha de nacimiento: </label>
+                      <input type="text" className="form-control mb-2" value={animal.birth_date} readOnly/>
+
+                    </div>
+
+                    <div className="col-6">
+
+                      <label>Nombre del dueño: </label>
+                      <input type="text" className="form-control mb-2" value={animal.owner_name} readOnly/>
+
+                      <label>Teléfono del dueño: </label>
+                      <input type="text" className="form-control mb-2" value={animal.owner_tel} readOnly/>
+
+                      <label>Dirección del dueño: </label>
+                      <input type="text" className="form-control mb-2" value={animal.owner_address} readOnly/>
+
+                      <label>E-mail del dueño: </label>
+                      <input type="text" className="form-control mb-2" value={animal.owner_email} readOnly/>
+
+                    </div>
+
+                  </div>
                 </div>
             </ModalBody>
             <ModalFooter>
@@ -244,8 +403,9 @@ function App() {
             ¿Estás seguro que deseas eliminar esta mascota?
           </ModalBody>
           <ModalFooter>
-            <button className="btn btn-secondary" onClick={()=> toggleDeleteModal("")}>No</button>
             <button className="btn btn-danger" onClick={()=> deleteAnimal(id)}>Si</button>
+            <button className="btn btn-secondary" onClick={()=> toggleDeleteModal("")}>No</button>
+            {error["operations"] !== null && <span>{error["operations"]}</span>}
           </ModalFooter>
         </Modal>
 
