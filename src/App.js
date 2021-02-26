@@ -237,25 +237,27 @@ function App() {
     toggleDetailModal();
   }
 
+  const center = {margin: 'auto', padding: 10}
+
   return (
-    <div className="container mt-5">
-      <h1>Mascotas</h1>
-      <hr/>
+    <div className="container mt-5" textAlign = "center">
+      <h1 className="text-center">Mascotas</h1>
+      <hr className="border-1 border-info"/>
       <div>
-        <div className="col-12">
+        <div className="col-10" style={center}>
           <h4 className="text-center">Lista de Mascotas</h4>
 
           {
             size(animals) === 0 ? (
               <li className="list-group-item">Aún no hay mascotas ingresadas.</li>
             ) : (
-              <ul className="list-group">
+              <ul className="list-group border border-1 border-info">
                 {
                   animals.map((animal) => (
                     <li className="list-group-item" key={animal.id}>
                       {animal.name}
 
-                      <button className="btn btn-danger btn-sm float-right" 
+                      <button className="btn btn-danger btn-sm float-right border border-danger" 
                         onClick={() => toggleDeleteModal(animal.id)}>Eliminar</button>
 
                       <button className="btn btn-warning btn-sm float-right mx-2"
@@ -285,55 +287,65 @@ function App() {
 
                   <div className="col-6">
 
-                    <strong>Nombre: </strong>
-                    <input type="text" className="form-control mb-2" name="name" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.name}/>
-                    <span style={{color: "red"}}>{error["name"]}</span>
-                    <br/>
+                    <div className="form-group">
+                      <strong>Nombre: </strong>
+                      <input type="text" className="form-control mb-2" name="name" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.name}/>
+                      <span style={{color: "red"}}>{error["name"]}</span>
+                    </div>
+                    
+                    <div className="form-group">
+                      <strong>Tipo: </strong>
+                      <input type="text" className="form-control mb-2" name="type" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.type}/>
+                      <span style={{color: "red"}}>{error["type"]}</span>
+                    </div>
 
-                    <strong>Tipo: </strong>
-                    <input type="text" className="form-control mb-2" name="type" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.type}/>
-                    <span style={{color: "red"}}>{error["type"]}</span>
-                    <br/>
+                    <div className="form-group">
+                      <strong>Raza: </strong>
+                      <input type="text" className="form-control mb-2" name="breed" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.breed}/>
+                      <span style={{color: "red"}}>{error["breed"]}</span>
+                    </div>
 
-                    <strong>Raza: </strong>
-                    <input type="text" className="form-control mb-2" name="breed" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.breed}/>
-                    <span style={{color: "red"}}>{error["breed"]}</span>
-                    <br/>
-
-                    <strong>Fecha de nacimiento: </strong>
-                    <input type="text" className="form-control mb-2" name="birth_date" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.birth_date}/>
-                    <span style={{color: "red"}}>{error["birth_date"]}</span>
+                    <div className="form-group">
+                      <strong>Fecha de nacimiento: </strong>
+                      <input type="text" className="form-control mb-2" name="birth_date" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.birth_date}/>
+                      <span style={{color: "red"}}>{error["birth_date"]}</span>
+                    </div>
 
                   </div>
 
                   <div className="col-6">
 
-                    <strong>Nombre del dueño: </strong>
-                    <input type="text" className="form-control mb-2" name="owner_name" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_name}/>
-                    <span style={{color: "red"}}>{error["owner_name"]}</span>
-                    <br/>
-
-                    <strong>Teléfono del dueño: </strong>
-                    <input type="text" className="form-control mb-2" name="owner_tel" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_tel}/>
-                    <span style={{color: "red"}}>{error["owner_tel"]}</span>
-                    <br/>
-
-                    <strong>Dirección del dueño: </strong>
-                    <input type="text" className="form-control mb-2" name="owner_address" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_address}/>
-                    <span style={{color: "red"}}>{error["owner_address"]}</span>
-                    <br/>
-
-                    <strong>E-mail del dueño: </strong>
-                    <input type="text" className="form-control mb-2" name="owner_email" 
-                    placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_email}/>
-                    <span style={{color: "red"}}>{error["owner_email"]}</span>
+                    <div className="form-group">
+                      <strong>Nombre del dueño: </strong>
+                      <input type="text" className="form-control mb-2" name="owner_name" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_name}/>
+                      <span style={{color: "red"}}>{error["owner_name"]}</span>
+                    </div>
+                    
+                    <div className="form-group">
+                      <strong>Teléfono del dueño: </strong>
+                      <input type="text" className="form-control mb-2" name="owner_tel" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_tel}/>
+                      <span style={{color: "red"}}>{error["owner_tel"]}</span>
+                    </div>
+                      
+                    <div className="form-group">
+                      <strong>Dirección del dueño: </strong>
+                      <input type="text" className="form-control mb-2" name="owner_address" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_address}/>
+                      <span style={{color: "red"}}>{error["owner_address"]}</span>
+                    </div>
+                      
+                    <div className="form-group">
+                      <strong>E-mail del dueño: </strong>
+                      <input type="text" className="form-control mb-2" name="owner_email" 
+                      placeholder="Ingrese un dato..." onChange={ handleChange } value={animal.owner_email}/>
+                      <span style={{color: "red"}}>{error["owner_email"]}</span>
+                    </div>
 
                   </div>
 
@@ -344,9 +356,9 @@ function App() {
               </div>
             </ModalBody>
             <ModalFooter>
-            <button className={editMode ? "btn btn-warning btn-block" : "btn btn-success btn-block"} 
+              <button className={editMode ? "btn btn-warning btn-block" : "btn btn-success btn-block"} 
               type="submit">{ editMode ? "Guardar" : "Agregar"}</button>
-            <button className="btn btn-danger" type="button" onClick={()=> cancelOpenModal()}>Cancelar</button>
+              <button className="btn btn-danger btn-block" type="button" onClick={()=> cancelOpenModal()}>Cancelar</button>
             </ModalFooter>
           </form>
         </Modal>
